@@ -5,13 +5,7 @@ int main()
     try
     {
         App app;
-        if (!app.init())
-        {
-            return -1;
-        }
-
         app.run();
-        app.shutdown();
     }
     catch (const std::exception &e)
     {

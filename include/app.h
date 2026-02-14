@@ -5,13 +5,16 @@
 class App
 {
 public:
-    bool init();
+    App();
+    ~App();
+
     void run();
-    void shutdown();
 
 private:
+    void init();
     void handleEvent(const SDL_Event &e);
     void render();
+    void shutdown();
 
     SDL_Window *window = nullptr;
     SDL_GLContext glContext = nullptr;

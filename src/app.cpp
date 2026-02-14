@@ -1,14 +1,25 @@
 #include "app.h"
 #include <GL/gl.h>
+#include <stdexcept>
 
-bool App::init()
+App::App()
+{
+    SDL_snprintf(title, sizeof(title), "RaycastFPS");
+    init();
+}
+
+App::~App()
+{
+    shutdown();
+}
+
+void App::init()
 {
     SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
 
     if (!SDL_Init(SDL_INIT_VIDEO))
     {
-        SDL_Log("SDL_Init failed: %s", SDL_GetError());
-        return false;
+        throw std::runtime_error(SDL_GetError());
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -16,30 +27,28 @@ bool App::init()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    window = SDL_CreateWindow("RaycastFPS", 800, 600,
+    window = SDL_CreateWindow(title, 800, 600,
                               SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
     if (!window)
     {
-        SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
         SDL_Quit();
-        return false;
+        throw std::runtime_error(SDL_GetError());
     }
 
     glContext = SDL_GL_CreateContext(window);
     if (!glContext)
     {
-        SDL_Log("SDL_GL_CreateContext failed: %s", SDL_GetError());
         SDL_DestroyWindow(window);
+        window = nullptr;
         SDL_Quit();
-        return false;
+        throw std::runtime_error(SDL_GetError());
     }
 
     SDL_GL_SetSwapInterval(1);
     SDL_ShowWindow(window);
 
     running = true;
-    return true;
 }
 
 void App::run()
@@ -74,9 +83,15 @@ void App::run()
 void App::shutdown()
 {
     if (glContext)
+    {
         SDL_GL_DestroyContext(glContext);
+        glContext = nullptr;
+    }
     if (window)
+    {
         SDL_DestroyWindow(window);
+        window = nullptr;
+    }
     SDL_Quit();
 }
 
