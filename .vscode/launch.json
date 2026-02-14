@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run RaycastFPS",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/RaycastFPS",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "environment": [],
+      "MIMode": "gdb",
+      "preLaunchTask": "CMake: Build"
+    }
+  ]
+}
