@@ -3,6 +3,9 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 App::App()
 {
@@ -13,6 +16,22 @@ App::App()
 App::~App()
 {
     shutdown();
+}
+
+namespace
+{
+    std::string readTextFile(const char *path)
+    {
+        std::ifstream file(path);
+        if (!file.is_open())
+        {
+            throw std::runtime_error(std::string("Failed to open shader file: ") + path);
+        }
+
+        std::ostringstream ss;
+        ss << file.rdbuf();
+        return ss.str();
+    }
 }
 
 void App::init()
@@ -56,21 +75,10 @@ void App::init()
         0.5f, -0.5f,
         0.0f, 0.5f};
 
-    const char *vertexSrc = R"GLSL(
-        #version 330 core
-        layout (location = 0) in vec2 aPos;
-        void main() {
-            gl_Position = vec4(aPos, 0.0, 1.0);
-        }
-    )GLSL";
-
-    const char *fragmentSrc = R"GLSL(
-        #version 330 core
-        out vec4 FragColor;
-        void main() {
-            FragColor = vec4(1.0, 0.3, 0.2, 1.0); // reddish
-        }
-    )GLSL";
+    const std::string vertexSrcStr = readTextFile("assets/shaders/triangle.vert");
+    const std::string fragmentSrcStr = readTextFile("assets/shaders/triangle.frag");
+    const char *vertexSrc = vertexSrcStr.c_str();
+    const char *fragmentSrc = fragmentSrcStr.c_str();
 
     // Greenish background color
     glClearColor(0.1f, 0.2f, 0.1f, 1.0f);
